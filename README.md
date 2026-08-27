@@ -10,8 +10,8 @@ accepts links from another app, detects the platform from the URL, and logs with
 opening Post Streak. The second tab shows accepted friends' newest posts.
 
 > Status: the backend and iOS Release build are implemented and locally verified.
-> A real Supabase project, API domain, and Apple provisioning profile are still
-> required before live testing or App Store submission.
+> The production Supabase schema is installed with RLS and direct client access
+> denied. Managed API deployment and live-device integration testing are next.
 
 ## Architecture
 
@@ -114,7 +114,20 @@ open PostStreak.xcodeproj
 Email confirmation affects sign-up behavior. If confirmation is enabled in
 Supabase, the app asks the user to confirm by email and then sign in.
 
-## Ubuntu deployment
+## Managed deployment (recommended)
+
+The repository includes [`render.yaml`](render.yaml) for a Render Blueprint. It
+deploys only the `backend/` directory, runs the health check at `/health`, and asks
+for the two server-only values instead of storing them in Git:
+
+- `DATABASE_URL`
+- `SUPABASE_SECRET_KEY`
+
+Create a Render Blueprint from this repository and supply those values in the
+dashboard. The free instance is suitable for development, but it sleeps after an
+idle period; use an always-on instance before App Store release.
+
+## Ubuntu deployment (alternative)
 
 The templates assume the checkout is `/opt/post-streak`, a locked-down service user
 named `poststreak`, and Uvicorn bound only to `127.0.0.1:8001`.

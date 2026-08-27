@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: post-streak-api-rosst22
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: pip install .
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.11
+      - key: SUPABASE_URL
+        value: https://atqrlypznagtkpouwuoi.supabase.co
+      - key: SUPPORT_EMAIL
+        value: ross.toma@gmail.com
+      - key: CORS_ORIGINS
+        value: "[]"
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
