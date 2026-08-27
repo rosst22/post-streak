@@ -4,7 +4,6 @@ struct AuthView: View {
     @EnvironmentObject private var store: SessionStore
     @State private var email = ""
     @State private var password = ""
-    @State private var displayName = ""
     @State private var weeklyTarget = 3
     @State private var isCreatingAccount = false
 
@@ -21,8 +20,6 @@ struct AuthView: View {
 
                 Section(isCreatingAccount ? "Create account" : "Sign in") {
                     if isCreatingAccount {
-                        TextField("Display name", text: $displayName)
-                            .textContentType(.name)
                         Stepper("Weekly target: \(weeklyTarget)", value: $weeklyTarget, in: 1...14)
                     }
                     TextField("Email", text: $email)
@@ -38,7 +35,6 @@ struct AuthView: View {
                                 await store.signUp(
                                     email: email,
                                     password: password,
-                                    displayName: displayName,
                                     weeklyTarget: weeklyTarget
                                 )
                             } else {

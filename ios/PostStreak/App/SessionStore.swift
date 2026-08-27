@@ -41,12 +41,11 @@ final class SessionStore: ObservableObject {
         }
     }
 
-    func signUp(email: String, password: String, displayName: String, weeklyTarget: Int) async {
+    func signUp(email: String, password: String, weeklyTarget: Int) async {
         await perform {
             try await client.signUp(
                 email: email,
                 password: password,
-                displayName: displayName,
                 timezone: TimeZone.current.identifier,
                 weeklyTarget: weeklyTarget
             )

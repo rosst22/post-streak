@@ -31,18 +31,15 @@ actor NetworkClient {
     func signUp(
         email: String,
         password: String,
-        displayName: String,
         timezone: String,
         weeklyTarget: Int
     ) async throws {
         struct SignUpBody: Encodable {
             struct Metadata: Encodable {
-                let displayName: String
                 let timezone: String
                 let weeklyTarget: Int
 
                 enum CodingKeys: String, CodingKey {
-                    case displayName = "display_name"
                     case timezone
                     case weeklyTarget = "weekly_target"
                 }
@@ -59,7 +56,6 @@ actor NetworkClient {
                 email: email,
                 password: password,
                 data: .init(
-                    displayName: displayName,
                     timezone: timezone,
                     weeklyTarget: weeklyTarget
                 )
