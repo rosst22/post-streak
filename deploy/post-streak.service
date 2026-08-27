@@ -1,0 +1,23 @@
+[Unit]
+Description=Post Streak FastAPI service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=poststreak
+Group=poststreak
+WorkingDirectory=/opt/post-streak/backend
+EnvironmentFile=/etc/post-streak.env
+ExecStart=/opt/post-streak/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8001 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
+
