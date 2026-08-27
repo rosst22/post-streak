@@ -1,0 +1,7 @@
+// Replace these three values before running the app.
+// $() prevents xcconfig from interpreting the two slashes as a comment.
+API_BASE_URL = https:/$()/api.example.com
+SUPABASE_URL = https:/$()/PROJECT_REF.supabase.co
+SUPABASE_PUBLISHABLE_KEY = sb_publishable_REPLACE_ME
+KEYCHAIN_ACCESS_GROUP = $(AppIdentifierPrefix)com.rosstoma.PostStreak.shared
+
