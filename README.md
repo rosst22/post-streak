@@ -9,9 +9,10 @@ Logging from the app takes two taps: **Log a post → platform**. A Share Extens
 accepts links from another app, detects the platform from the URL, and logs without
 opening Post Streak. The second tab shows accepted friends' newest posts.
 
-> Status: the backend and iOS Release build are implemented and locally verified.
-> The production Supabase schema is installed with RLS and direct client access
-> denied. Managed API deployment and live-device integration testing are next.
+> Status: the backend is live on Render, the production Supabase schema is installed
+> with RLS and direct client access denied, and the signed iOS build is installed on
+> a physical iPhone. The public API health check is available at
+> <https://post-streak-api-rosst22.onrender.com/health>.
 
 ## Architecture
 
@@ -19,7 +20,7 @@ opening Post Streak. The second tab shows accepted friends' newest posts.
 iOS app + Share Extension
           │ Supabase access JWT
           ▼
-Caddy ──► FastAPI ──► Supabase Postgres
+      Render/FastAPI ──► Supabase Postgres
              │
              └──────► Supabase Auth JWKS (cached public signing keys)
 ```
@@ -156,4 +157,4 @@ runs the tests and Ruff checks on every push.
 
 Built a SwiftUI publishing-cadence tracker with a two-tap workflow and iOS Share
 Extension, backed by FastAPI, Supabase Auth/Postgres, timezone-correct weekly streaks,
-and an Ubuntu systemd/Caddy deployment.
+and a managed cloud deployment.

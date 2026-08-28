@@ -1,6 +1,5 @@
-// Replace API_BASE_URL after the Render service is created.
 // $() prevents xcconfig from interpreting the two slashes as a comment.
-API_BASE_URL = https:/$()/api.example.com
+API_BASE_URL = https:/$()/post-streak-api-rosst22.onrender.com
 SUPABASE_URL = https:/$()/atqrlypznagtkpouwuoi.supabase.co
 // Publishable keys are designed for mobile clients. Privileged keys never belong here.
 SUPABASE_PUBLISHABLE_KEY = sb_publishable_0xUHVbH5Shs8QsHX_uvDgw_GbLHGeJM
