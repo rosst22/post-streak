@@ -4,6 +4,7 @@ struct FeedView: View {
     @EnvironmentObject private var store: SessionStore
     @State private var reportingPost: Post?
     @State private var blockingPost: Post?
+    @State private var showingFriends = false
 
     var body: some View {
         Group {
@@ -55,6 +56,16 @@ struct FeedView: View {
             }
         }
         .navigationTitle("Friends")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Manage friends", systemImage: "person.badge.plus") {
+                    showingFriends = true
+                }
+            }
+        }
+        .sheet(isPresented: $showingFriends) {
+            NavigationStack { FriendManagerView() }
+        }
         .refreshable { await store.refresh() }
         .confirmationDialog(
             "Why are you reporting this post?",
@@ -90,4 +101,3 @@ struct FeedView: View {
         }
     }
 }
-

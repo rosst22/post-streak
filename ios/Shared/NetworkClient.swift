@@ -82,6 +82,38 @@ actor NetworkClient {
         try await apiRequest(path: "feed", method: "GET")
     }
 
+    func me() async throws -> MeProfile {
+        try await apiRequest(path: "me", method: "GET")
+    }
+
+    func friends() async throws -> [Friend] {
+        try await apiRequest(path: "friends", method: "GET")
+    }
+
+    func requestFriend(code: String) async throws -> Friend {
+        struct Body: Encodable {
+            let friendCode: String
+            enum CodingKeys: String, CodingKey { case friendCode = "friend_code" }
+        }
+        return try await apiRequest(
+            path: "friends/request",
+            method: "POST",
+            body: Body(friendCode: code.lowercased())
+        )
+    }
+
+    func acceptFriend(friendshipID: UUID) async throws -> Friend {
+        struct Body: Encodable {
+            let friendshipID: UUID
+            enum CodingKeys: String, CodingKey { case friendshipID = "friendship_id" }
+        }
+        return try await apiRequest(
+            path: "friends/accept",
+            method: "POST",
+            body: Body(friendshipID: friendshipID)
+        )
+    }
+
     func report(postID: UUID, reason: ReportReason) async throws {
         struct Body: Encodable { let reason: ReportReason }
         let _: ActionResponse = try await apiRequest(

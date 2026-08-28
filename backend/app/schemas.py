@@ -52,8 +52,16 @@ class StatsResponse(BaseModel):
     heatmap: list[DayCount]
 
 
+class MeResponse(BaseModel):
+    id: uuid.UUID
+    display_name: str
+    friend_code: str
+    timezone: str
+    weekly_target: int
+
+
 class FriendRequestCreate(BaseModel):
-    addressee_id: uuid.UUID
+    friend_code: str = Field(min_length=12, max_length=12, pattern=r"^[A-Fa-f0-9]{12}$")
 
 
 class FriendAcceptCreate(BaseModel):

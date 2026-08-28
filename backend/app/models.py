@@ -58,6 +58,7 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("auth.users.id", ondelete="CASCADE"), primary_key=True
     )
+    friend_code: Mapped[str] = mapped_column(String(12), unique=True)
     display_name: Mapped[str] = mapped_column(String(80), default="Creator")
     timezone: Mapped[str] = mapped_column(String(64), default="UTC")
     weekly_target: Mapped[int] = mapped_column(Integer, default=3)

@@ -11,6 +11,8 @@ final class SessionStore: ObservableObject {
     @Published private(set) var authState: AuthState = .checking
     @Published private(set) var stats: Stats?
     @Published private(set) var feed: [Post] = []
+    @Published private(set) var friends: [Friend] = []
+    @Published private(set) var profile: MeProfile?
     @Published private(set) var isLoading = false
     @Published var errorMessage: String?
     @Published var successMessage: String?
@@ -73,6 +75,8 @@ final class SessionStore: ObservableObject {
             authState = .signedOut
             stats = nil
             feed = []
+            friends = []
+            profile = nil
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -84,6 +88,8 @@ final class SessionStore: ObservableObject {
             authState = .signedOut
             stats = nil
             feed = []
+            friends = []
+            profile = nil
             successMessage = nil
         }
     }
@@ -110,7 +116,14 @@ final class SessionStore: ObservableObject {
         do {
             async let statsRequest = client.stats()
             async let feedRequest = client.feed()
-            (stats, feed) = try await (statsRequest, feedRequest)
+            async let friendsRequest = client.friends()
+            async let profileRequest = client.me()
+            (stats, feed, friends, profile) = try await (
+                statsRequest,
+                feedRequest,
+                friendsRequest,
+                profileRequest
+            )
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -121,6 +134,26 @@ final class SessionStore: ObservableObject {
             try await client.createPost(platform: platform)
             stats = try await client.stats()
             successMessage = "Logged to \(platform.label)"
+        }
+    }
+
+    func sendFriendRequest(code: String) async {
+        await perform {
+            let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            let friend = try await client.requestFriend(code: normalized)
+            friends.removeAll { $0.friendshipID == friend.friendshipID }
+            friends.insert(friend, at: 0)
+            successMessage = "Friend request sent"
+        }
+    }
+
+    func accept(_ friend: Friend) async {
+        await perform {
+            let accepted = try await client.acceptFriend(friendshipID: friend.friendshipID)
+            friends.removeAll { $0.friendshipID == accepted.friendshipID }
+            friends.insert(accepted, at: 0)
+            successMessage = "You are now friends"
+            feed = try await client.feed()
         }
     }
 

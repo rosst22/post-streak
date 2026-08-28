@@ -26,16 +26,18 @@ Database = Annotated[AsyncSession, Depends(get_session)]
 async def request_friend(
     body: FriendRequestCreate, user: AuthenticatedUser, session: Database
 ) -> FriendResponse:
-    if body.addressee_id == user.id:
-        raise HTTPException(status_code=422, detail="You cannot friend yourself")
-    addressee = await session.get(User, body.addressee_id)
+    addressee = await session.scalar(
+        select(User).where(User.friend_code == body.friend_code.lower())
+    )
     if addressee is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Friend code not found")
+    if addressee.id == user.id:
+        raise HTTPException(status_code=422, detail="You cannot friend yourself")
     blocked = await session.scalar(
         select(BlockedUser).where(
             or_(
-                (BlockedUser.blocker_id == user.id) & (BlockedUser.blocked_id == body.addressee_id),
-                (BlockedUser.blocker_id == body.addressee_id) & (BlockedUser.blocked_id == user.id),
+                (BlockedUser.blocker_id == user.id) & (BlockedUser.blocked_id == addressee.id),
+                (BlockedUser.blocker_id == addressee.id) & (BlockedUser.blocked_id == user.id),
             )
         )
     )
@@ -45,7 +47,7 @@ async def request_friend(
     friendship = Friendship(
         id=uuid.uuid4(),
         requester_id=user.id,
-        addressee_id=body.addressee_id,
+        addressee_id=addressee.id,
         status=FriendshipStatus.pending,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),

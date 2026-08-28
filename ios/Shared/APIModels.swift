@@ -140,6 +140,50 @@ struct Stats: Decodable, Sendable {
     }
 }
 
+struct MeProfile: Decodable, Sendable {
+    let id: UUID
+    let displayName: String
+    let friendCode: String
+    let timezone: String
+    let weeklyTarget: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case displayName = "display_name"
+        case friendCode = "friend_code"
+        case timezone
+        case weeklyTarget = "weekly_target"
+    }
+}
+
+enum FriendshipStatus: String, Decodable, Sendable {
+    case pending
+    case accepted
+}
+
+enum FriendDirection: String, Decodable, Sendable {
+    case incoming
+    case outgoing
+}
+
+struct Friend: Decodable, Identifiable, Sendable {
+    let friendshipID: UUID
+    let userID: UUID
+    let displayName: String
+    let status: FriendshipStatus
+    let direction: FriendDirection
+
+    var id: UUID { friendshipID }
+
+    enum CodingKeys: String, CodingKey {
+        case friendshipID = "friendship_id"
+        case userID = "user_id"
+        case displayName = "display_name"
+        case status
+        case direction
+    }
+}
+
 struct SessionTokens: Codable, Sendable {
     let accessToken: String
     let refreshToken: String
