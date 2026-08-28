@@ -44,8 +44,8 @@ enum AppError: LocalizedError {
         case .notSignedIn: "Sign in before logging a post."
         case .invalidResponse: "The server returned an unreadable response."
         case .keychain(let status): "Could not access the saved session (\(status))."
-        case .emailConfirmationRequired: "Check your email, confirm the account, then sign in."
+        case .emailConfirmationRequired:
+            "Check your email if this account is new, then sign in. If you already confirmed it, sign in now."
         }
     }
 }
-

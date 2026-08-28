@@ -41,8 +41,14 @@ final class SessionStore: ObservableObject {
         }
     }
 
-    func signUp(email: String, password: String, weeklyTarget: Int) async {
-        await perform {
+    /// Returns true when Supabase requires the user to continue on the sign-in form.
+    @discardableResult
+    func signUp(email: String, password: String, weeklyTarget: Int) async -> Bool {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
             try await client.signUp(
                 email: email,
                 password: password,
@@ -51,6 +57,13 @@ final class SessionStore: ObservableObject {
             )
             authState = .signedIn
             await refresh()
+            return false
+        } catch AppError.emailConfirmationRequired {
+            errorMessage = AppError.emailConfirmationRequired.localizedDescription
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
         }
     }
 

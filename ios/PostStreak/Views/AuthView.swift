@@ -32,11 +32,14 @@ struct AuthView: View {
                     Button(isCreatingAccount ? "Create account" : "Sign in") {
                         Task {
                             if isCreatingAccount {
-                                await store.signUp(
+                                let shouldSignIn = await store.signUp(
                                     email: email,
                                     password: password,
                                     weeklyTarget: weeklyTarget
                                 )
+                                if shouldSignIn {
+                                    isCreatingAccount = false
+                                }
                             } else {
                                 await store.signIn(email: email, password: password)
                             }
