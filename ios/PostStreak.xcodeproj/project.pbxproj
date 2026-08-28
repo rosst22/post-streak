@@ -338,7 +338,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rosstoma.PostStreak.Share;
 				PRODUCT_NAME = PostStreakShare;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -356,7 +356,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rosstoma.PostStreak.Share;
 				PRODUCT_NAME = PostStreakShare;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -374,7 +374,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rosstoma.PostStreak;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -414,7 +414,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = FMQ2H9F8WV;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -482,7 +482,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = FMQ2H9F8WV;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -521,7 +521,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rosstoma.PostStreak;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
