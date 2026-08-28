@@ -4,7 +4,13 @@ struct FeedView: View {
     @EnvironmentObject private var store: SessionStore
     @State private var reportingPost: Post?
     @State private var blockingPost: Post?
-    @State private var showingFriends = false
+    @State private var showingFriends = {
+        #if DEBUG
+        return ProcessInfo.processInfo.arguments.contains("-screenshot-friends")
+        #else
+        return false
+        #endif
+    }()
 
     var body: some View {
         Group {

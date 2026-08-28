@@ -27,8 +27,70 @@ final class SessionStore: ObservableObject {
         self.privacyURL = client.apiBaseURL.appending(path: "privacy")
         self.termsURL = client.apiBaseURL.appending(path: "terms")
         self.supportURL = client.apiBaseURL.appending(path: "support")
+
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-screenshot-mode") {
+            loadScreenshotData()
+            return
+        }
+        #endif
+
         Task { await restore() }
     }
+
+    #if DEBUG
+    private func loadScreenshotData() {
+        let calendar = Calendar(identifier: .gregorian)
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        let today = calendar.startOfDay(for: Date())
+        let heatmap = (0..<365).reversed().compactMap { offset -> DayCount? in
+            guard let date = calendar.date(byAdding: .day, value: -offset, to: today) else { return nil }
+            let count = offset % 11 == 0 ? 3 : (offset % 5 == 0 ? 1 : 0)
+            return DayCount(date: formatter.string(from: date), count: count)
+        }
+
+        let jordanID = UUID()
+        let mayaID = UUID()
+        authState = .signedIn
+        stats = Stats(
+            currentStreak: 8,
+            longestStreak: 12,
+            weeklyTarget: 5,
+            currentWeekPosts: 4,
+            postsPerWeek: [],
+            heatmap: heatmap
+        )
+        profile = MeProfile(
+            id: UUID(),
+            displayName: "Ross",
+            friendCode: "A7C4F91D2B6E",
+            timezone: "America/Toronto",
+            weeklyTarget: 5
+        )
+        friends = [
+            Friend(friendshipID: UUID(), userID: jordanID, displayName: "Jordan", status: .accepted, direction: .incoming),
+            Friend(friendshipID: UUID(), userID: mayaID, displayName: "Maya", status: .pending, direction: .incoming),
+            Friend(friendshipID: UUID(), userID: UUID(), displayName: "Alex", status: .pending, direction: .outgoing)
+        ]
+        feed = [
+            Post(
+                id: UUID(), userID: jordanID, platform: .youtube,
+                postedAt: Date().addingTimeInterval(-3_600), format: .video,
+                url: URL(string: "https://youtube.com/watch?v=creator"),
+                title: "A week of building in public", author: Author(id: jordanID, displayName: "Jordan")
+            ),
+            Post(
+                id: UUID(), userID: mayaID, platform: .instagram,
+                postedAt: Date().addingTimeInterval(-10_800), format: .reel,
+                url: URL(string: "https://instagram.com/reel/creator"),
+                title: "Behind the scenes", author: Author(id: mayaID, displayName: "Maya")
+            )
+        ]
+    }
+    #endif
 
     func restore() async {
         authState = await client.hasSession() ? .signedIn : .signedOut
