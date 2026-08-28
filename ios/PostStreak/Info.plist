@@ -26,6 +26,8 @@
   <string>$(SUPABASE_PUBLISHABLE_KEY)</string>
   <key>KeychainAccessGroup</key>
   <string>$(KEYCHAIN_ACCESS_GROUP)</string>
+  <key>ITSAppUsesNonExemptEncryption</key>
+  <false/>
   <key>CFBundleDisplayName</key>
   <string>Post Streak</string>
   <key>UILaunchScreen</key>
