@@ -15,6 +15,7 @@ final class SessionStore: ObservableObject {
     @Published private(set) var friends: [Friend] = []
     @Published private(set) var profile: MeProfile?
     @Published private(set) var isLoading = false
+    @Published private(set) var isLoggingPost = false
     @Published var errorMessage: String?
     @Published var successMessage: String?
 
@@ -210,11 +211,18 @@ final class SessionStore: ObservableObject {
     }
 
     func quickLog(_ platform: Platform) async {
-        await perform {
+        guard !isLoggingPost else { return }
+        isLoggingPost = true
+        errorMessage = nil
+        defer { isLoggingPost = false }
+
+        do {
             let post = try await client.createPost(platform: platform)
             posts.insert(post, at: 0)
             stats = try await client.stats()
             successMessage = "Logged to \(platform.label)"
+        } catch {
+            handle(error)
         }
     }
 

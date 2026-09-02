@@ -78,12 +78,20 @@ struct HomeView: View {
                 Button {
                     choosingPlatform = true
                 } label: {
-                    Label("Log a post", systemImage: "plus.circle.fill")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
+                    HStack {
+                        if store.isLoggingPost {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "plus.circle.fill")
+                        }
+                        Text(store.isLoggingPost ? "Logging post…" : "Log a post")
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(store.isLoading || store.isLoggingPost)
                 .confirmationDialog("Where did you post?", isPresented: $choosingPlatform) {
                     ForEach(Platform.allCases) { platform in
                         Button(platform.label) { Task { await store.quickLog(platform) } }
