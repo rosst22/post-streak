@@ -67,6 +67,13 @@ struct HomeView: View {
                         .padding()
                         .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
                     }
+                } else if store.isLoading {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                        Text("Loading your streak…")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 220)
                 } else {
                     ContentUnavailableView(
                         "No stats yet",
