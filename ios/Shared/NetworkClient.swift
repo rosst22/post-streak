@@ -5,6 +5,7 @@ actor NetworkClient {
     private let configuration: AppConfiguration
     private let keychain: KeychainStore
     private let session: URLSession
+    private var tokenRefreshTask: Task<SessionTokens, Error>?
 
     init(
         configuration: AppConfiguration,
@@ -86,6 +87,33 @@ actor NetworkClient {
         try await apiRequest(path: "me", method: "GET")
     }
 
+    func updateMe(displayName: String, timezone: String, weeklyTarget: Int) async throws -> MeProfile {
+        struct Body: Encodable {
+            let displayName: String
+            let timezone: String
+            let weeklyTarget: Int
+
+            enum CodingKeys: String, CodingKey {
+                case displayName = "display_name"
+                case timezone
+                case weeklyTarget = "weekly_target"
+            }
+        }
+        return try await apiRequest(
+            path: "me",
+            method: "PATCH",
+            body: Body(displayName: displayName, timezone: timezone, weeklyTarget: weeklyTarget)
+        )
+    }
+
+    func posts() async throws -> [Post] {
+        try await apiRequest(path: "posts", method: "GET")
+    }
+
+    func deletePost(id: UUID) async throws {
+        let _: ActionResponse = try await apiRequest(path: "posts/\(id)", method: "DELETE")
+    }
+
     func friends() async throws -> [Friend] {
         try await apiRequest(path: "friends", method: "GET")
     }
@@ -112,6 +140,10 @@ actor NetworkClient {
             method: "POST",
             body: Body(friendshipID: friendshipID)
         )
+    }
+
+    func removeFriendship(id: UUID) async throws {
+        let _: ActionResponse = try await apiRequest(path: "friends/\(id)", method: "DELETE")
     }
 
     func report(postID: UUID, reason: ReportReason) async throws {
@@ -156,16 +188,36 @@ actor NetworkClient {
     }
 
     private func validAccessToken() async throws -> String {
-        guard var tokens = try keychain.load() else { throw AppError.notSignedIn }
-        if tokens.expiresAt <= Date() {
-            let refreshed = try await authRequest(
-                path: "auth/v1/token?grant_type=refresh_token",
-                body: ["refresh_token": tokens.refreshToken]
-            )
-            tokens = try refreshed.tokens()
-            try keychain.save(tokens)
+        guard let tokens = try keychain.load() else { throw AppError.notSignedIn }
+        guard tokens.expiresAt <= Date() else { return tokens.accessToken }
+
+        if let tokenRefreshTask {
+            do {
+                return try await tokenRefreshTask.value.accessToken
+            } catch {
+                try? keychain.clear()
+                throw AppError.sessionExpired
+            }
         }
-        return tokens.accessToken
+
+        let refreshToken = tokens.refreshToken
+        let task = Task {
+            try await authRequest(
+                path: "auth/v1/token?grant_type=refresh_token",
+                body: ["refresh_token": refreshToken]
+            ).tokens()
+        }
+        tokenRefreshTask = task
+        do {
+            let refreshed = try await task.value
+            try keychain.save(refreshed)
+            tokenRefreshTask = nil
+            return refreshed.accessToken
+        } catch {
+            tokenRefreshTask = nil
+            try? keychain.clear()
+            throw AppError.sessionExpired
+        }
     }
 
     private func authRequest(path: String, body: [String: String]) async throws -> SupabaseTokenResponse {
@@ -196,7 +248,12 @@ actor NetworkClient {
         var request = URLRequest(url: configuration.apiBaseURL.appending(path: path))
         request.httpMethod = method
         request.setValue("Bearer \(try await validAccessToken())", forHTTPHeaderField: "Authorization")
-        return try await send(request)
+        do {
+            return try await send(request)
+        } catch AppError.sessionExpired {
+            try? keychain.clear()
+            throw AppError.sessionExpired
+        }
     }
 
     private func apiRequest<Body: Encodable, Response: Decodable>(
@@ -209,7 +266,12 @@ actor NetworkClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(try await validAccessToken())", forHTTPHeaderField: "Authorization")
         request.httpBody = try Self.encoder.encode(body)
-        return try await send(request)
+        do {
+            return try await send(request)
+        } catch AppError.sessionExpired {
+            try? keychain.clear()
+            throw AppError.sessionExpired
+        }
     }
 
     private func send<Response: Decodable>(_ request: URLRequest) async throws -> Response {
@@ -217,6 +279,9 @@ actor NetworkClient {
         guard let http = response as? HTTPURLResponse else { throw AppError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
             let error = try? Self.decoder.decode(ServerError.self, from: data)
+            if http.statusCode == 401 {
+                throw AppError.sessionExpired
+            }
             throw AppError.server(
                 error?.detail ?? error?.message ?? error?.errorDescription ?? "Request failed (\(http.statusCode))"
             )

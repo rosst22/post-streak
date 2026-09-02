@@ -34,6 +34,39 @@ struct HomeView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+
+                    if !store.posts.isEmpty {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Recent posts")
+                                .font(.headline)
+                                .padding(.bottom, 6)
+                            ForEach(Array(store.posts.prefix(5).enumerated()), id: \.element.id) { index, post in
+                                HStack(spacing: 12) {
+                                    Image(systemName: post.platform.symbol)
+                                        .foregroundStyle(.green)
+                                        .frame(width: 24)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(post.platform.label)
+                                            .font(.subheadline.weight(.medium))
+                                        Text(post.postedAt, style: .relative)
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Menu("Post actions", systemImage: "ellipsis") {
+                                        Button("Delete post", systemImage: "trash", role: .destructive) {
+                                            Task { await store.delete(post) }
+                                        }
+                                    }
+                                    .labelStyle(.iconOnly)
+                                }
+                                .padding(.vertical, 10)
+                                if index < min(store.posts.count, 5) - 1 { Divider() }
+                            }
+                        }
+                        .padding()
+                        .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
+                    }
                 } else {
                     ContentUnavailableView(
                         "No stats yet",

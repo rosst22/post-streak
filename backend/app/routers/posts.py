@@ -3,14 +3,14 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import AuthenticatedUser
 from app.database import get_session
 from app.models import Post
 from app.moderation import validate_user_text
-from app.schemas import PostCreate, PostResponse
+from app.schemas import ActionResponse, PostCreate, PostResponse
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 Database = Annotated[AsyncSession, Depends(get_session)]
@@ -56,3 +56,18 @@ async def list_posts(
         .offset(offset)
     )
     return list(result)
+
+
+@router.delete("/{post_id}", response_model=ActionResponse)
+async def delete_post(
+    post_id: uuid.UUID,
+    user: AuthenticatedUser,
+    session: Database,
+) -> ActionResponse:
+    result = await session.execute(
+        delete(Post).where(Post.id == post_id, Post.user_id == user.id)
+    )
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+    await session.commit()
+    return ActionResponse(message="Post deleted")

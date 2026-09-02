@@ -20,7 +20,7 @@ margin:48px auto;padding:0 20px;color:#e5e7eb;background:#0b0d0c}}a{{color:#22c5
 h1,h2{{line-height:1.2}}small{{color:#9ca3af}}</style></head><body>
 <h1>{escape(title)}</h1>{body}
 <p>Contact: <a href="mailto:{safe_email}">{safe_email}</a></p>
-<small>Last updated August 27, 2026</small></body></html>"""
+    <small>Last updated September 2, 2026</small></body></html>"""
     )
 
 
@@ -29,14 +29,22 @@ async def privacy(settings: Annotated[Settings, Depends(get_settings)]) -> HTMLR
     return page(
         "Privacy Policy",
         """<p>Post Streak collects the email address used for authentication, your display name,
-timezone, weekly target, post cadence metadata, shared post links, and friendship/moderation data.
-This information is used only to provide authentication, streak statistics, sharing, and the
-friends feed.</p><h2>Sharing and tracking</h2><p>Data is processed by Supabase, our authentication
-and database provider, and by the server hosting the API. We do not sell personal data, run ads,
-or track users across apps or websites.</p><h2>Retention and deletion</h2><p>Data is retained while
-your account exists. You can permanently delete your account and associated app data inside the
-app under Settings. You may also contact support to request access or deletion.</p><h2>Safety</h2>
-<p>Reports and blocks are stored so we can investigate abuse and protect users.</p>""",
+    timezone, weekly target, post cadence metadata, shared post links, and friendship/moderation
+    data.
+    This information is used only to provide authentication, streak statistics, sharing, account
+    settings, and the friends feed.</p><h2>What friends can see</h2><p>Only people whose friend
+    requests you accept can see your display name and the post links or titles you log. Your email,
+    timezone, and weekly target are not shown to friends.</p><h2>Service providers and tracking</h2>
+    <p>Supabase processes authentication and stores app data. Render hosts the Post Streak API.
+    Instagram, TikTok, and YouTube are labels and link destinations only; Post Streak does not use
+    their APIs or send account credentials to them. We do not sell personal data, run ads, use
+    analytics SDKs, or track users across apps or websites.</p><h2>Retention and deletion</h2>
+    <p>Data
+    is retained while your account exists. You can edit your profile and permanently delete your
+    account and associated app data inside the app under Settings. You may also contact support to
+    request access or deletion.</p><h2>Safety</h2><p>Reports and blocks are stored so we can
+    investigate abuse and protect users. Reported content is reviewed by the developer and may be
+    removed for violating the community standards.</p>""",
         settings.support_email,
     )
 

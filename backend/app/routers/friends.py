@@ -174,3 +174,21 @@ async def block_user(
     )
     await session.commit()
     return ActionResponse(message="User blocked")
+
+
+@router.delete("/{friendship_id}", response_model=ActionResponse)
+async def remove_friendship(
+    friendship_id: uuid.UUID,
+    user: AuthenticatedUser,
+    session: Database,
+) -> ActionResponse:
+    result = await session.execute(
+        delete(Friendship).where(
+            Friendship.id == friendship_id,
+            or_(Friendship.requester_id == user.id, Friendship.addressee_id == user.id),
+        )
+    )
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Friendship not found")
+    await session.commit()
+    return ActionResponse(message="Friendship removed")

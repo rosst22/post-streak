@@ -30,6 +30,15 @@ struct FeedView: View {
                             Text(post.postedAt, style: .relative)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                            Menu("Post actions", systemImage: "ellipsis") {
+                                Button("Report post", systemImage: "exclamationmark.bubble") {
+                                    reportingPost = post
+                                }
+                                Button("Block user", systemImage: "hand.raised", role: .destructive) {
+                                    blockingPost = post
+                                }
+                            }
+                            .labelStyle(.iconOnly)
                         }
                         Text(post.author?.displayName ?? "Friend")
                             .font(.subheadline.weight(.medium))

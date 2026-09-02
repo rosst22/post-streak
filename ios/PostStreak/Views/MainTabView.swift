@@ -6,9 +6,11 @@ struct MainTabView: View {
     @State private var selection: Tab = {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
-        return arguments.contains("-screenshot-feed") || arguments.contains("-screenshot-friends")
-            ? .friends
-            : .home
+        if arguments.contains("-screenshot-settings") { return .settings }
+        if arguments.contains("-screenshot-feed") || arguments.contains("-screenshot-friends") {
+            return .friends
+        }
+        return .home
         #else
         return .home
         #endif

@@ -55,6 +55,9 @@ struct FriendManagerView: View {
                         HStack {
                             Text(friend.displayName)
                             Spacer()
+                            Button("Decline", role: .destructive) {
+                                Task { await store.remove(friend) }
+                            }
                             Button("Accept") {
                                 Task { await store.accept(friend) }
                             }
@@ -67,7 +70,16 @@ struct FriendManagerView: View {
             if !accepted.isEmpty {
                 Section("Friends") {
                     ForEach(accepted) { friend in
-                        Label(friend.displayName, systemImage: "person.fill.checkmark")
+                        HStack {
+                            Label(friend.displayName, systemImage: "person.fill.checkmark")
+                            Spacer()
+                            Menu("Friend actions", systemImage: "ellipsis") {
+                                Button("Remove friend", systemImage: "person.fill.xmark", role: .destructive) {
+                                    Task { await store.remove(friend) }
+                                }
+                            }
+                            .labelStyle(.iconOnly)
+                        }
                     }
                 }
             }
@@ -80,6 +92,10 @@ struct FriendManagerView: View {
                             Spacer()
                             Text("Pending")
                                 .foregroundStyle(.secondary)
+                            Button("Cancel", role: .destructive) {
+                                Task { await store.remove(friend) }
+                            }
+                            .buttonStyle(.borderless)
                         }
                     }
                 }

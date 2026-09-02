@@ -1,4 +1,5 @@
 from typing import Annotated
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -8,9 +9,20 @@ from app.auth import AuthenticatedUser
 from app.config import Settings, get_settings
 from app.database import get_session
 from app.models import User
-from app.schemas import ActionResponse, MeResponse
+from app.moderation import validate_user_text
+from app.schemas import ActionResponse, MeResponse, MeUpdate
 
 router = APIRouter(prefix="/me", tags=["me"])
+
+
+def response_for(profile: User) -> MeResponse:
+    return MeResponse(
+        id=profile.id,
+        display_name=profile.display_name,
+        friend_code=profile.friend_code,
+        timezone=profile.timezone,
+        weekly_target=profile.weekly_target,
+    )
 
 
 @router.get("", response_model=MeResponse)
@@ -21,13 +33,32 @@ async def get_me(
     profile = await session.get(User, user.id)
     if profile is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
-    return MeResponse(
-        id=profile.id,
-        display_name=profile.display_name,
-        friend_code=profile.friend_code,
-        timezone=profile.timezone,
-        weekly_target=profile.weekly_target,
-    )
+    return response_for(profile)
+
+
+@router.patch("", response_model=MeResponse)
+async def update_me(
+    body: MeUpdate,
+    user: AuthenticatedUser,
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> MeResponse:
+    profile = await session.get(User, user.id)
+    if profile is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    try:
+        ZoneInfo(body.timezone)
+    except ZoneInfoNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Unknown timezone",
+        ) from None
+
+    profile.display_name = validate_user_text(body.display_name) or "Creator"
+    profile.timezone = body.timezone
+    profile.weekly_target = body.weekly_target
+    await session.commit()
+    await session.refresh(profile)
+    return response_for(profile)
 
 
 @router.delete("", response_model=ActionResponse)

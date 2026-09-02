@@ -11,6 +11,7 @@ final class SessionStore: ObservableObject {
     @Published private(set) var authState: AuthState = .checking
     @Published private(set) var stats: Stats?
     @Published private(set) var feed: [Post] = []
+    @Published private(set) var posts: [Post] = []
     @Published private(set) var friends: [Friend] = []
     @Published private(set) var profile: MeProfile?
     @Published private(set) var isLoading = false
@@ -52,6 +53,7 @@ final class SessionStore: ObservableObject {
             return DayCount(date: formatter.string(from: date), count: count)
         }
 
+        let screenshotUserID = UUID()
         let jordanID = UUID()
         let mayaID = UUID()
         authState = .signedIn
@@ -64,7 +66,7 @@ final class SessionStore: ObservableObject {
             heatmap: heatmap
         )
         profile = MeProfile(
-            id: UUID(),
+            id: screenshotUserID,
             displayName: "Ross",
             friendCode: "A7C4F91D2B6E",
             timezone: "America/Toronto",
@@ -87,6 +89,18 @@ final class SessionStore: ObservableObject {
                 postedAt: Date().addingTimeInterval(-10_800), format: .reel,
                 url: URL(string: "https://instagram.com/reel/creator"),
                 title: "Behind the scenes", author: Author(id: mayaID, displayName: "Maya")
+            )
+        ]
+        posts = [
+            Post(
+                id: UUID(), userID: screenshotUserID, platform: .instagram,
+                postedAt: Date().addingTimeInterval(-7_200), format: .reel,
+                url: nil, title: nil, author: nil
+            ),
+            Post(
+                id: UUID(), userID: screenshotUserID, platform: .youtube,
+                postedAt: Date().addingTimeInterval(-86_400), format: .video,
+                url: nil, title: nil, author: nil
             )
         ]
     }
@@ -137,6 +151,7 @@ final class SessionStore: ObservableObject {
             authState = .signedOut
             stats = nil
             feed = []
+            posts = []
             friends = []
             profile = nil
         } catch {
@@ -150,6 +165,7 @@ final class SessionStore: ObservableObject {
             authState = .signedOut
             stats = nil
             feed = []
+            posts = []
             friends = []
             profile = nil
             successMessage = nil
@@ -180,22 +196,46 @@ final class SessionStore: ObservableObject {
             async let feedRequest = client.feed()
             async let friendsRequest = client.friends()
             async let profileRequest = client.me()
-            (stats, feed, friends, profile) = try await (
+            async let postsRequest = client.posts()
+            (stats, feed, friends, profile, posts) = try await (
                 statsRequest,
                 feedRequest,
                 friendsRequest,
-                profileRequest
+                profileRequest,
+                postsRequest
             )
         } catch {
-            errorMessage = error.localizedDescription
+            handle(error)
         }
     }
 
     func quickLog(_ platform: Platform) async {
         await perform {
-            try await client.createPost(platform: platform)
+            let post = try await client.createPost(platform: platform)
+            posts.insert(post, at: 0)
             stats = try await client.stats()
             successMessage = "Logged to \(platform.label)"
+        }
+    }
+
+    func delete(_ post: Post) async {
+        await perform {
+            try await client.deletePost(id: post.id)
+            posts.removeAll { $0.id == post.id }
+            stats = try await client.stats()
+            successMessage = "Post removed"
+        }
+    }
+
+    func updateProfile(displayName: String, weeklyTarget: Int) async {
+        await perform {
+            profile = try await client.updateMe(
+                displayName: displayName,
+                timezone: TimeZone.current.identifier,
+                weeklyTarget: weeklyTarget
+            )
+            stats = try await client.stats()
+            successMessage = "Settings saved"
         }
     }
 
@@ -219,6 +259,15 @@ final class SessionStore: ObservableObject {
         }
     }
 
+    func remove(_ friend: Friend) async {
+        await perform {
+            try await client.removeFriendship(id: friend.friendshipID)
+            friends.removeAll { $0.friendshipID == friend.friendshipID }
+            feed = try await client.feed()
+            successMessage = friend.status == .accepted ? "Friend removed" : "Request removed"
+        }
+    }
+
     private func perform(_ action: () async throws -> Void) async {
         isLoading = true
         errorMessage = nil
@@ -226,7 +275,19 @@ final class SessionStore: ObservableObject {
         do {
             try await action()
         } catch {
-            errorMessage = error.localizedDescription
+            handle(error)
         }
+    }
+
+    private func handle(_ error: Error) {
+        if case AppError.sessionExpired = error {
+            authState = .signedOut
+            stats = nil
+            feed = []
+            posts = []
+            friends = []
+            profile = nil
+        }
+        errorMessage = error.localizedDescription
     }
 }

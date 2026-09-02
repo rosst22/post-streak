@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 from app.models import FriendshipStatus, Platform, PostFormat, ReportReason
 
@@ -58,6 +58,20 @@ class MeResponse(BaseModel):
     friend_code: str
     timezone: str
     weekly_target: int
+
+
+class MeUpdate(BaseModel):
+    display_name: str = Field(min_length=1, max_length=40)
+    timezone: str = Field(min_length=1, max_length=64)
+    weekly_target: int = Field(ge=1, le=14)
+
+    @field_validator("display_name")
+    @classmethod
+    def normalize_display_name(cls, value: str) -> str:
+        normalized = " ".join(value.split())
+        if not normalized:
+            raise ValueError("display_name cannot be blank")
+        return normalized
 
 
 class FriendRequestCreate(BaseModel):

@@ -4,7 +4,8 @@ Post Streak is an iOS app for maintaining a consistent publishing habit across
 Instagram, TikTok, YouTube, and other platforms. It tracks only posts and cadence—
 never views, followers, likes, or engagement.
 
-The home screen shows a weekly streak, target progress, and a 365-day heatmap.
+The home screen shows a weekly streak, target progress, a 365-day heatmap, and
+recent logs that can be corrected or deleted.
 Logging from the app takes two taps: **Log a post → platform**. A Share Extension
 accepts links from another app, detects the platform from the URL, and logs without
 opening Post Streak. The second tab shows accepted friends' newest posts.
@@ -84,10 +85,11 @@ python3 -m venv .venv
 
 The protected API is:
 
-- `POST /posts`, `GET /posts`
-- `GET /me/stats`, `DELETE /me`
+- `POST /posts`, `GET /posts`, `DELETE /posts/{post_id}`
+- `GET /me`, `PATCH /me`, `GET /me/stats`, `DELETE /me`
 - `GET /feed`
-- `POST /friends/request`, `POST /friends/accept`, `POST /friends/block`, `GET /friends`
+- `POST /friends/request`, `POST /friends/accept`, `POST /friends/block`,
+  `GET /friends`, `DELETE /friends/{friendship_id}`
 - `POST /posts/{post_id}/report`
 
 All protected calls use `Authorization: Bearer <Supabase access token>`.

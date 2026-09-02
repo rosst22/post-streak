@@ -37,6 +37,7 @@ enum AppError: LocalizedError {
     case server(String)
     case keychain(OSStatus)
     case emailConfirmationRequired
+    case sessionExpired
 
     var errorDescription: String? {
         switch self {
@@ -46,6 +47,7 @@ enum AppError: LocalizedError {
         case .keychain(let status): "Could not access the saved session (\(status))."
         case .emailConfirmationRequired:
             "Check your email if this account is new, then sign in. If you already confirmed it, sign in now."
+        case .sessionExpired: "Your session expired. Please sign in again."
         }
     }
 }
