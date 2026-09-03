@@ -55,9 +55,10 @@ class User(Base):
     __tablename__ = "users"
     __table_args__ = (CheckConstraint("weekly_target BETWEEN 1 AND 100"),)
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("auth.users.id", ondelete="CASCADE"), primary_key=True
-    )
+    # Supabase owns auth.users and the production migration already enforces this
+    # foreign key. Repeating it here leaves SQLAlchemy unable to resolve the
+    # external auth schema when it flushes profile edits.
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
     friend_code: Mapped[str] = mapped_column(String(12), unique=True)
     display_name: Mapped[str] = mapped_column(String(80), default="Creator")
     timezone: Mapped[str] = mapped_column(String(64), default="UTC")
