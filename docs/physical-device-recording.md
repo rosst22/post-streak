@@ -1,13 +1,13 @@
 # Physical-device recording checklist
 
-Use the latest TestFlight build on the physical iPhone 15 Pro. Turn on Do Not Disturb, hide personal
+Use TestFlight build 5 on the physical iPhone 15 Pro running iOS 26.6 (23G71). Turn on Do Not Disturb, hide personal
 notifications, and start from the Home Screen. Keep the recording continuous and avoid showing a
 personal inbox, password manager, or production credentials.
 
 ## Before recording
 
-- [ ] Confirm the iPhone is on the latest available iOS version and record the exact version/build.
-- [ ] Install the new Post Streak build from TestFlight.
+- [x] Confirm the iPhone is on the latest available iOS version and record the exact version/build.
+- [x] Install Post Streak build 5 on the physical iPhone.
 - [ ] Confirm the demo account is seeded and the secondary friend account remains available.
 - [ ] Prepare a disposable account for the deletion flow; do not delete the reviewer demo account.
 - [ ] Put Safari on a harmless public URL for the Share Extension demonstration.

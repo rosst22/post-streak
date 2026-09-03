@@ -8,3 +8,4 @@ __pycache__/
 *.xcuserstate
 xcuserdata/
 DerivedData/
+supabase/.temp/

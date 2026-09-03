@@ -10,10 +10,10 @@ Logging from the app takes two taps: **Log a post → platform**. A Share Extens
 accepts links from another app, detects the platform from the URL, and logs without
 opening Post Streak. The second tab shows accepted friends' newest posts.
 
-> Status: the backend is live on Render, the production Supabase schema is installed
+> Status: the backend is live on Ross's existing VPS, the production Supabase schema is installed
 > with RLS and direct client access denied, and the signed iOS build is installed on
 > a physical iPhone. The public API health check is available at
-> <https://post-streak-api-rosst22.onrender.com/health>.
+> <https://api.rosstoma.me/poststreak/health>.
 
 ## Architecture
 
@@ -21,7 +21,7 @@ opening Post Streak. The second tab shows accepted friends' newest posts.
 iOS app + Share Extension
           │ Supabase access JWT
           ▼
-      Render/FastAPI ──► Supabase Postgres
+        VPS/FastAPI ──► Supabase Postgres
              │
              └──────► Supabase Auth JWKS (cached public signing keys)
 ```
@@ -117,7 +117,7 @@ open PostStreak.xcodeproj
 Email confirmation affects sign-up behavior. If confirmation is enabled in
 Supabase, the app asks the user to confirm by email and then sign in.
 
-## Managed deployment (recommended)
+## Render deployment (development alternative)
 
 The repository includes [`render.yaml`](render.yaml) for a Render Blueprint. It
 deploys only the `backend/` directory, runs the health check at `/health`, and asks
@@ -128,25 +128,26 @@ for the two server-only values instead of storing them in Git:
 
 Create a Render Blueprint from this repository and supply those values in the
 dashboard. The free instance is suitable for development, but it sleeps after an
-idle period; use an always-on instance before App Store release.
+idle period and is not used by the App Store build.
 
-## Ubuntu deployment (alternative)
+## Ubuntu deployment (production)
 
 The templates assume the checkout is `/opt/post-streak`, a locked-down service user
 named `poststreak`, and Uvicorn bound only to `127.0.0.1:8001`.
 
 ```bash
 sudo cp deploy/post-streak.service /etc/systemd/system/
-sudo cp deploy/Caddyfile /etc/caddy/Caddyfile
+sudo cp deploy/Caddyfile.vps /etc/caddy/Caddyfile
 sudo systemctl daemon-reload
 sudo systemctl enable --now post-streak
 sudo systemctl reload caddy
-curl https://api.example.com/health
+curl https://api.rosstoma.me/poststreak/health
 ```
 
-Before those commands, create `/etc/post-streak.env`, install the backend virtual
-environment under `/opt/post-streak/backend`, replace `api.example.com`, and point
-DNS at the VPS. Production migration and deployment are intentionally manual.
+Before those commands, create `/etc/post-streak.env` and install the backend virtual
+environment under `/opt/post-streak/backend`. The service listens only on port 8001;
+Caddy exposes it under `/poststreak` while keeping FitTrack on the rest of the
+hostname. Production migration and deployment are intentionally manual.
 
 ## Tests
 

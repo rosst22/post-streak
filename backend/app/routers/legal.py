@@ -35,9 +35,9 @@ async def privacy(settings: Annotated[Settings, Depends(get_settings)]) -> HTMLR
     settings, and the friends feed.</p><h2>What friends can see</h2><p>Only people whose friend
     requests you accept can see your display name and the post links or titles you log. Your email,
     timezone, and weekly target are not shown to friends.</p><h2>Service providers and tracking</h2>
-    <p>Supabase processes authentication and stores app data. Render hosts the Post Streak API.
-    Instagram, TikTok, and YouTube are labels and link destinations only; Post Streak does not use
-    their APIs or send account credentials to them. We do not sell personal data, run ads, use
+    <p>Supabase processes authentication and stores app data. DigitalOcean hosts the Post Streak
+    API. Instagram, TikTok, and YouTube are labels and link destinations only; Post Streak does not
+    use their APIs or send account credentials to them. We do not sell personal data, run ads, use
     analytics SDKs, or track users across apps or websites.</p><h2>Retention and deletion</h2>
     <p>Data
     is retained while your account exists. You can edit your profile and permanently delete your

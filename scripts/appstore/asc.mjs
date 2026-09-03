@@ -108,8 +108,8 @@ async function metadata() {
             'creator,content,streak,posting,habit,instagram,tiktok,youtube,consistency,schedule',
           promotionalText:
             'Focus on consistency, not vanity metrics. Log what you publish, keep a weekly streak, and stay accountable with friends.',
-          supportUrl: 'https://post-streak-api-rosst22.onrender.com/support',
-          marketingUrl: 'https://post-streak-api-rosst22.onrender.com/support',
+          supportUrl: 'https://api.rosstoma.me/poststreak/support',
+          marketingUrl: 'https://api.rosstoma.me/poststreak/support',
         },
       },
     },
@@ -131,9 +131,9 @@ async function metadata() {
           name: 'Post Streak: Creator Tracker',
           subtitle: 'Build a publishing habit',
           privacyPolicyUrl:
-            'https://post-streak-api-rosst22.onrender.com/privacy',
+            'https://api.rosstoma.me/poststreak/privacy',
           privacyChoicesUrl:
-            'https://post-streak-api-rosst22.onrender.com/privacy',
+            'https://api.rosstoma.me/poststreak/privacy',
         },
       },
     },
@@ -236,7 +236,7 @@ async function screenshots() {
   }
 }
 
-async function selectBuild(buildNumber = '4') {
+async function selectBuild(buildNumber = '5') {
   const editable = await version();
   const { data: builds } = await api(
     `/apps/${APP_ID}/builds?limit=10`,

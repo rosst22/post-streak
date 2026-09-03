@@ -44,8 +44,8 @@ available directly in Settings.
 
 ## Metadata checks
 
-- [ ] Support URL: `https://post-streak-api-rosst22.onrender.com/support`
-- [ ] Privacy URL: `https://post-streak-api-rosst22.onrender.com/privacy`
+- [ ] Support URL: `https://api.rosstoma.me/poststreak/support`
+- [ ] Privacy URL: `https://api.rosstoma.me/poststreak/privacy`
 - [ ] User Privacy Choices URL: use the privacy URL (it explains in-app deletion and support requests).
 - [ ] App Privacy includes Name, Email Address, User ID, and Other User Content; all linked to identity,
   used for App Functionality, and not used for tracking.

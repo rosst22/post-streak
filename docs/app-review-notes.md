@@ -8,13 +8,13 @@ in the dedicated Sign-in required fields.
 
 1. SCREEN RECORDING
 
-Captured on a physical [IPHONE MODEL] running [IOS VERSION], the attached recording begins with launch and
+Captured on a physical iPhone 15 Pro running iOS 26.6 (23G71), the attached recording begins with launch and
 shows registration, login, logging/deleting a post, profile and target settings, streak/heatmap,
 friend requests, feed, reporting, blocking, Share Extension, legal links, sign-out, and deletion.
 
 2. TESTED DEVICES AND OPERATING SYSTEMS
 
-- [IPHONE MODEL / IDENTIFIER], [IOS VERSION] — physical-device functional testing and recording.
+- iPhone 15 Pro, iOS 26.6 (23G71) — physical-device functional testing and recording.
 - iPhone 17 simulator, iOS 26.5 — layout and end-to-end UI verification.
 
 Post Streak is iPhone-only and requires iOS 17.0 or later.
@@ -42,7 +42,7 @@ Email is used only for authentication and is never shown to friends.
 5. EXTERNAL SERVICES, TOOLS, AND PLATFORMS
 
 - Supabase Auth/Postgres: authentication and app data.
-- Render: FastAPI backend and public legal/support pages.
+- DigitalOcean: FastAPI backend and public legal/support pages.
 - Apple Keychain/Share Extension: session storage and shared-link logging.
 - Instagram, TikTok, and YouTube: labels/outbound destinations only; no APIs or credentials.
 

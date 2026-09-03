@@ -1,0 +1,38 @@
+# Full production Caddy configuration for Ross's shared VPS.
+{
+	email ross.toma@gmail.com
+}
+
+rosstoma.me {
+	root * /var/www/rosstoma.me
+	encode zstd gzip
+
+	@html path / *.html
+	header @html Cache-Control "no-cache"
+
+	@assets path *.jpg *.jpeg *.png *.svg *.ico *.woff2
+	header @assets Cache-Control "public, max-age=604800"
+
+	header Strict-Transport-Security "max-age=15552000"
+	header X-Content-Type-Options "nosniff"
+
+	file_server
+}
+
+www.rosstoma.me {
+	redir https://rosstoma.me{uri}
+}
+
+api.rosstoma.me {
+	# Strip the public prefix before forwarding requests to Post Streak.
+	handle_path /poststreak/* {
+		reverse_proxy 127.0.0.1:8001
+	}
+
+	# Everything else on this hostname remains owned by FitTrack.
+	handle {
+		@docs path /docs /docs/* /redoc /redoc/* /openapi.json
+		respond @docs 404
+		reverse_proxy 127.0.0.1:8000
+	}
+}

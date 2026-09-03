@@ -13,6 +13,8 @@ ExecStart=/opt/post-streak/backend/.venv/bin/uvicorn app.main:app --host 127.0.0
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=20
+MemoryHigh=192M
+MemoryMax=256M
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
@@ -20,4 +22,3 @@ NoNewPrivileges=true
 
 [Install]
 WantedBy=multi-user.target
-
