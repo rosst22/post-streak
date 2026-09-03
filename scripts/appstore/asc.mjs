@@ -236,24 +236,25 @@ async function screenshots() {
   }
 }
 
-async function selectBuild() {
+async function selectBuild(buildNumber = '4') {
   const editable = await version();
   const { data: builds } = await api(
     `/apps/${APP_ID}/builds?limit=10`,
   );
   const candidates = builds.filter(
     (build) =>
-      build.attributes.version === '3' &&
+      build.attributes.version === buildNumber &&
+      // Build numbers are strings in App Store Connect.
       build.attributes.processingState === 'VALID',
   );
   if (candidates.length !== 1) {
-    throw new Error(`Expected one valid build 3, found ${candidates.length}.`);
+    throw new Error(`Expected one valid build ${buildNumber}, found ${candidates.length}.`);
   }
   await api(`/appStoreVersions/${editable.id}/relationships/build`, {
     method: 'PATCH',
     body: { data: { type: 'builds', id: candidates[0].id } },
   });
-  console.log('build_selected', 3);
+  console.log('build_selected', buildNumber);
 }
 
 async function reviewCredentials() {
@@ -366,8 +367,8 @@ const commands = {
   'review-credentials': reviewCredentials,
   status,
 };
-const command = process.argv[2];
+const [command, ...args] = process.argv.slice(2);
 if (!commands[command]) {
   throw new Error(`Use one of: ${Object.keys(commands).join(', ')}`);
 }
-await commands[command]();
+await commands[command](...args);
