@@ -291,6 +291,27 @@ async function reviewCredentials() {
   console.log('review_credentials_updated', true);
 }
 
+async function reviewNotes() {
+  const editable = await version();
+  const { data: detail } = await api(
+    `/appStoreVersions/${editable.id}/appStoreReviewDetail`,
+  );
+  const notes = readFileSync(join(REPO, 'docs', 'app-review-notes.md'), 'utf8')
+    .replace(/^# App Review Information — Notes\s*/, '')
+    .trim();
+  await api(`/appStoreReviewDetails/${detail.id}`, {
+    method: 'PATCH',
+    body: {
+      data: {
+        type: 'appStoreReviewDetails',
+        id: detail.id,
+        attributes: { notes },
+      },
+    },
+  });
+  console.log('review_notes_updated', true);
+}
+
 async function status() {
   const editable = await version();
   const localized = await localization(editable.id);
@@ -365,6 +386,7 @@ const commands = {
   screenshots,
   'select-build': selectBuild,
   'review-credentials': reviewCredentials,
+  'review-notes': reviewNotes,
   status,
 };
 const [command, ...args] = process.argv.slice(2);

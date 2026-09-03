@@ -1,15 +1,12 @@
 # App Review Information — Notes
 
-> Submission guard: replace the bracketed physical-device details and attach the recording before
-> copying these notes into App Store Connect.
-
-A physical-device recording is attached to the App Review reply. The durable demo login is entered
-in the dedicated Sign-in required fields.
+A physical-device recording will be attached to the App Review reply before resubmission. The
+durable demo login is entered in the dedicated Sign-in required fields.
 
 1. SCREEN RECORDING
 
-Captured on a physical iPhone 15 Pro running iOS 26.6 (23G71), the attached recording begins with launch and
-shows registration, login, logging/deleting a post, profile and target settings, streak/heatmap,
+The recording is captured on a physical iPhone 15 Pro running iOS 26.6 (23G71). It begins with launch
+and shows registration, login, logging/deleting a post, profile and target settings, streak/heatmap,
 friend requests, feed, reporting, blocking, Share Extension, legal links, sign-out, and deletion.
 
 2. TESTED DEVICES AND OPERATING SYSTEMS
