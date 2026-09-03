@@ -37,10 +37,12 @@ actor NetworkClient {
     ) async throws {
         struct SignUpBody: Encodable {
             struct Metadata: Encodable {
+                let displayName: String
                 let timezone: String
                 let weeklyTarget: Int
 
                 enum CodingKeys: String, CodingKey {
+                    case displayName = "display_name"
                     case timezone
                     case weeklyTarget = "weekly_target"
                 }
@@ -57,6 +59,7 @@ actor NetworkClient {
                 email: email,
                 password: password,
                 data: .init(
+                    displayName: "Creator",
                     timezone: timezone,
                     weeklyTarget: weeklyTarget
                 )

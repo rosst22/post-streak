@@ -10,6 +10,7 @@ from app.config import Settings, get_settings
 from app.database import get_session
 from app.models import User
 from app.moderation import validate_user_text
+from app.profiles import private_default_display_name
 from app.schemas import ActionResponse, MeResponse, MeUpdate
 
 router = APIRouter(prefix="/me", tags=["me"])
@@ -33,6 +34,11 @@ async def get_me(
     profile = await session.get(User, user.id)
     if profile is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    private_name = private_default_display_name(profile.display_name, user)
+    if private_name != profile.display_name:
+        profile.display_name = private_name
+        await session.commit()
+        await session.refresh(profile)
     return response_for(profile)
 
 
