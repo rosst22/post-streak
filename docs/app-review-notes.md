@@ -1,17 +1,20 @@
 # App Review Information — Notes
 
+> Submission guard: replace the bracketed physical-device details and attach the recording before
+> copying these notes into App Store Connect.
+
 A physical-device recording is attached to the App Review reply. The durable demo login is entered
 in the dedicated Sign-in required fields.
 
 1. SCREEN RECORDING
 
-Captured on a physical iPhone 15 Pro running iOS 26.6, the attached recording begins with launch and
+Captured on a physical [IPHONE MODEL] running [IOS VERSION], the attached recording begins with launch and
 shows registration, login, logging/deleting a post, profile and target settings, streak/heatmap,
 friend requests, feed, reporting, blocking, Share Extension, legal links, sign-out, and deletion.
 
 2. TESTED DEVICES AND OPERATING SYSTEMS
 
-- iPhone 15 Pro (iPhone16,1), iOS 26.6 — physical-device functional testing and recording.
+- [IPHONE MODEL / IDENTIFIER], [IOS VERSION] — physical-device functional testing and recording.
 - iPhone 17 simulator, iOS 26.5 — layout and end-to-end UI verification.
 
 Post Streak is iPhone-only and requires iOS 17.0 or later.
